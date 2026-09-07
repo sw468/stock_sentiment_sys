@@ -1,0 +1,14 @@
+{
+  "model": "bert",
+  "trained_at": "2026-08-30T12:43:09",
+  "Accuracy": 0.8803298471440064,
+  "Precision": 0.8789233158313846,
+  "Recall": 0.8807783247279395,
+  "F1-Score": 0.8794797360795488,
+  "Training Time (s)": 1565.4509797096252,
+  "Framework": "PyTorch + Transformers",
+  "Early Stopping": "Enabled",
+  "Completed Epoch": 5.0,
+  "Maximum Epochs": 5,
+  "Best Validation Macro F1": 0.8802062689610263
+}

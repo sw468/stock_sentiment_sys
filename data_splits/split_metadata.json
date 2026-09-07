@@ -1,0 +1,9 @@
+{
+  "dataset": "stock_sentiment_balanced_40_30_30_unique.csv",
+  "dataset_sha256": "1c51a7c156bb97e9de30431880f80bf23e5d54db35b634180881d8bd775538f4",
+  "created_at": "2026-08-29T16:50:22",
+  "random_state": 42,
+  "test_size": 0.2,
+  "train_rows": 19888,
+  "test_rows": 4972
+}

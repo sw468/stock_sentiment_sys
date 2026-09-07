@@ -1,0 +1,13 @@
+{
+  "model": "bilstm",
+  "trained_at": "2026-08-30T12:16:39",
+  "Accuracy": 0.7735317779565567,
+  "Precision": 0.7930188677196409,
+  "Recall": 0.7710637391931274,
+  "F1-Score": 0.7746601533357165,
+  "Training Time (s)": 7.843350172042847,
+  "Framework": "PyTorch",
+  "Early Stopping": "Activated",
+  "Completed Epochs": 5,
+  "Maximum Epochs": 10
+}

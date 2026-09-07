@@ -1,0 +1,10 @@
+{
+  "model": "svm",
+  "trained_at": "2026-08-30T12:16:29",
+  "Accuracy": 0.8103378921962993,
+  "Precision": 0.8128293772644546,
+  "Recall": 0.8106083493829462,
+  "F1-Score": 0.8105391956473755,
+  "Training Time (s)": 0.768747091293335,
+  "Early Stopping": "Not applicable"
+}
