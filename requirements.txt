@@ -1,0 +1,10 @@
+streamlit
+pandas
+numpy<2.3
+matplotlib
+scikit-learn
+scipy
+joblib
+torch
+transformers
+accelerate
