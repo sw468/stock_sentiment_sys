@@ -71,6 +71,12 @@ with st.sidebar:
             "BERT"
         ]
     )
+st.divider()
+
+    compare_models = st.button(
+        "📊 Model Comparison",
+        use_container_width=True
+    )
 
 MODEL_KEYS = {
     "SVM + TF-IDF": "svm",
@@ -83,6 +89,111 @@ model_key = MODEL_KEYS[selected_model]
 def read_json(path):
     with open(path, "r", encoding="utf-8") as file:
         return json.load(file)
+# ============================================================
+# MODEL COMPARISON
+# ============================================================
+
+if compare_models:
+
+    st.header("📊 Model Comparison")
+
+    model_files = {
+        "SVM + TF-IDF": "svm_metrics.json",
+        "BiLSTM": "bilstm_metrics.json",
+        "BERT": "bert_metrics.json"
+    }
+
+    comparison_data = []
+
+    for model_name, file_name in model_files.items():
+
+        metrics_path = RESULT_DIR / file_name
+
+        if metrics_path.exists():
+
+            model_metrics = read_json(metrics_path)
+
+            comparison_data.append({
+                "Model": model_name,
+                "Accuracy": model_metrics["Accuracy"],
+                "Precision": model_metrics["Precision"],
+                "Recall": model_metrics["Recall"],
+                "F1-Score": model_metrics["F1-Score"],
+                "Training Time (s)": model_metrics["Training Time (s)"]
+            })
+
+    if comparison_data:
+
+        comparison_df = pd.DataFrame(comparison_data)
+
+        # =========================
+        # TABLE
+        # =========================
+
+        st.subheader("Overall Performance")
+
+        st.dataframe(
+            comparison_df.round(4),
+            use_container_width=True,
+            hide_index=True
+        )
+
+        # =========================
+        # PERFORMANCE GRAPH
+        # =========================
+
+        st.subheader("Performance Comparison")
+
+        performance_df = comparison_df.set_index("Model")[
+            [
+                "Accuracy",
+                "Precision",
+                "Recall",
+                "F1-Score"
+            ]
+        ]
+
+        st.bar_chart(performance_df)
+
+        # =========================
+        # TRAINING TIME GRAPH
+        # =========================
+
+        st.subheader("Training Time Comparison")
+
+        time_df = comparison_df.set_index("Model")[
+            ["Training Time (s)"]
+        ]
+
+        st.bar_chart(time_df)
+
+        # =========================
+        # BEST MODEL
+        # =========================
+
+        best_index = comparison_df["F1-Score"].idxmax()
+
+        best_model = comparison_df.loc[
+            best_index,
+            "Model"
+        ]
+
+        best_f1 = comparison_df.loc[
+            best_index,
+            "F1-Score"
+        ]
+
+        st.success(
+            f"🏆 Best Model: {best_model} "
+            f"(F1-Score: {best_f1:.4f})"
+        )
+
+    else:
+        st.warning(
+            "No trained model results were found."
+        )
+
+    st.stop()
 
 def model_is_ready(key):
     if key == "svm":
