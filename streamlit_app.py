@@ -63,6 +63,7 @@ st.caption(
 
 with st.sidebar:
     st.header("Choose Model")
+
     selected_model = st.radio(
         "Select a pre-trained model:",
         [
@@ -71,7 +72,8 @@ with st.sidebar:
             "BERT"
         ]
     )
-st.divider()
+
+    st.divider()
 
     compare_models = st.button(
         "📊 Model Comparison",
