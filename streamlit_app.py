@@ -829,29 +829,68 @@ if st.button(
             "Please enter a sentence."
         )
 
-    elif model_key == "svm":
-        model, vectorizer = load_svm()
+   elif model_key == "svm":
 
-        x = vectorizer.transform(
-            [sentence]
+    # ==========================================
+    # LOAD SVM + TF-IDF
+    # ==========================================
+
+    model, vectorizer = load_svm()
+
+    # Convert text into TF-IDF features
+    x = vectorizer.transform([sentence])
+
+    # Predict sentiment
+    prediction = model.predict(x)[0]
+
+    # Get decision scores for all classes
+    scores = model.decision_function(x)[0]
+
+    classes = model.classes_
+
+    predicted_index = list(classes).index(prediction)
+
+    decision_score = float(
+        scores[predicted_index]
+    )
+
+    # ==========================================
+    # RESULT
+    # ==========================================
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.metric(
+            "Predicted Sentiment",
+            prediction.upper()
         )
 
-        prediction = model.predict(x)[0]
-
-        scores = model.decision_function(x)[0]
-
-        predicted_index = list(
-            model.classes_
-        ).index(prediction)
-
-        st.success(
-            f"Predicted Sentiment: **{prediction.upper()}**"
+    with col2:
+        st.metric(
+            "Decision Score",
+            f"{decision_score:.4f}"
         )
 
-        st.write(
-            f"SVM decision score: "
-            f"**{scores[predicted_index]:.4f}**"
-        )
+    # ==========================================
+    # DECISION SCORE GRAPH
+    # ==========================================
+
+    st.subheader("SVM Decision Scores")
+
+    score_df = pd.DataFrame({
+        "Sentiment": classes,
+        "Decision Score": scores
+    })
+
+    score_df = score_df.set_index("Sentiment")
+
+    st.bar_chart(score_df)
+
+    st.caption(
+        "Higher decision score means the SVM model "
+        "has stronger support for that sentiment class."
+    )
 
     elif model_key == "bilstm":
         model, vocab, classes, max_length, device = (
