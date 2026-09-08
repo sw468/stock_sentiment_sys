@@ -802,11 +802,11 @@ with training_tab:
             )
 
 # ============================================================
-# LIVE SENTIMENT ANALYSIS
+# TEST YOUR OWN SENTENCE
 # ============================================================
 
 st.divider()
-st.header("🔎 Live Sentiment Analysis")
+st.header("Test Your Own Sentence")
 
 sentence = st.text_area(
     "Enter a stock/news sentence:",
@@ -818,23 +818,23 @@ sentence = st.text_area(
 )
 
 if st.button(
-    f"Analyze with {selected_model}",
+    f"Predict with {selected_model}",
     type="primary",
     use_container_width=True
 ):
     sentence = sentence.strip()
 
     if not sentence:
-        st.warning("Please enter a sentence.")
+        st.warning(
+            "Please enter a sentence."
+        )
 
-    # ========================================================
-    # SVM + TF-IDF
-    # ========================================================
     elif model_key == "svm":
-
         model, vectorizer = load_svm()
 
-        x = vectorizer.transform([sentence])
+        x = vectorizer.transform(
+            [sentence]
+        )
 
         prediction = model.predict(x)[0]
 
@@ -844,58 +844,16 @@ if st.button(
             model.classes_
         ).index(prediction)
 
-        decision_score = float(
-            scores[predicted_index]
+        st.success(
+            f"Predicted Sentiment: **{prediction.upper()}**"
         )
 
-        # ==========================================
-        # RESULT
-        # ==========================================
-
-        col1, col2 = st.columns(2)
-
-        with col1:
-            st.metric(
-                "Prediction",
-                prediction.upper()
-            )
-
-        with col2:
-            st.metric(
-                "Decision Score",
-                f"{decision_score:.4f}"
-            )
-
-        st.info(
-            "SVM uses decision scores instead of probabilities. "
-            "A higher score means stronger preference for that sentiment class."
+        st.write(
+            f"SVM decision score: "
+            f"**{scores[predicted_index]:.4f}**"
         )
 
-        # ==========================================
-        # DECISION SCORE GRAPH
-        # ==========================================
-
-        st.subheader("📊 Sentiment Decision Scores")
-
-        score_df = pd.DataFrame({
-            "Sentiment": [
-                str(label).capitalize()
-                for label in model.classes_
-            ],
-            "Decision Score": scores
-        })
-
-        st.bar_chart(
-            score_df.set_index(
-                "Sentiment"
-            )["Decision Score"]
-        )
-
-    # ========================================================
-    # BiLSTM
-    # ========================================================
     elif model_key == "bilstm":
-
         model, vocab, classes, max_length, device = (
             load_bilstm()
         )
@@ -913,7 +871,6 @@ if st.button(
         )
 
         with torch.no_grad():
-
             logits = model(x)
 
             probabilities = torch.softmax(
@@ -925,43 +882,28 @@ if st.button(
             np.argmax(probabilities)
         )
 
-        prediction = classes[predicted_id]
+        prediction = classes[
+            predicted_id
+        ]
 
         confidence = float(
             probabilities[predicted_id]
         )
 
-        # -------------------------------
-        # Prediction + Confidence
-        # -------------------------------
+        st.success(
+            f"Predicted Sentiment: **{prediction.upper()}**"
+        )
 
-        col1, col2 = st.columns(2)
+        st.write(
+            f"Confidence: **{confidence:.2%}**"
+        )
 
-        with col1:
-            st.metric(
-                "Prediction",
-                prediction.upper()
-            )
-
-        with col2:
-            st.metric(
-                "Confidence",
-                f"{confidence:.2%}"
-            )
-
-        # -------------------------------
-        # Probability Graph
-        # -------------------------------
-
-        st.subheader("📊 Sentiment Probability")
-
-        probability_df = pd.DataFrame({
-            "Sentiment": [
-                str(label).capitalize()
-                for label in classes
-            ],
-            "Probability": probabilities
-        })
+        probability_df = pd.DataFrame(
+            {
+                "Sentiment": classes,
+                "Probability": probabilities
+            }
+        )
 
         st.bar_chart(
             probability_df.set_index(
@@ -969,11 +911,7 @@ if st.button(
             )["Probability"]
         )
 
-    # ========================================================
-    # BERT
-    # ========================================================
-    elif model_key == "bert":
-
+    else:
         model, tokenizer, classes, device = (
             load_bert()
         )
@@ -992,8 +930,9 @@ if st.button(
         }
 
         with torch.no_grad():
-
-            output = model(**encoded)
+            output = model(
+                **encoded
+            )
 
             probabilities = torch.softmax(
                 output.logits,
@@ -1004,43 +943,28 @@ if st.button(
             np.argmax(probabilities)
         )
 
-        prediction = classes[predicted_id]
+        prediction = classes[
+            predicted_id
+        ]
 
         confidence = float(
             probabilities[predicted_id]
         )
 
-        # -------------------------------
-        # Prediction + Confidence
-        # -------------------------------
+        st.success(
+            f"Predicted Sentiment: **{prediction.upper()}**"
+        )
 
-        col1, col2 = st.columns(2)
+        st.write(
+            f"Confidence: **{confidence:.2%}**"
+        )
 
-        with col1:
-            st.metric(
-                "Prediction",
-                prediction.upper()
-            )
-
-        with col2:
-            st.metric(
-                "Confidence",
-                f"{confidence:.2%}"
-            )
-
-        # -------------------------------
-        # Probability Graph
-        # -------------------------------
-
-        st.subheader("📊 Sentiment Probability")
-
-        probability_df = pd.DataFrame({
-            "Sentiment": [
-                str(label).capitalize()
-                for label in classes
-            ],
-            "Probability": probabilities
-        })
+        probability_df = pd.DataFrame(
+            {
+                "Sentiment": classes,
+                "Probability": probabilities
+            }
+        )
 
         st.bar_chart(
             probability_df.set_index(
