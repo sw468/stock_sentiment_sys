@@ -830,66 +830,67 @@ if st.button(
     # ========================================================
     # SVM + TF-IDF
     # ========================================================
-   elif model_key == "svm":
+    elif model_key == "svm":
 
-    model, vectorizer = load_svm()
+        model, vectorizer = load_svm()
 
-    x = vectorizer.transform([sentence])
+        x = vectorizer.transform([sentence])
 
-    prediction = model.predict(x)[0]
+        prediction = model.predict(x)[0]
 
-    scores = model.decision_function(x)[0]
+        scores = model.decision_function(x)[0]
 
-    predicted_index = list(
-        model.classes_
-    ).index(prediction)
+        predicted_index = list(
+            model.classes_
+        ).index(prediction)
 
-    decision_score = float(
-        scores[predicted_index]
-    )
-
-    # ==========================================
-    # RESULT
-    # ==========================================
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-        st.metric(
-            "Prediction",
-            prediction.upper()
+        decision_score = float(
+            scores[predicted_index]
         )
 
-    with col2:
-        st.metric(
-            "Decision Score",
-            f"{decision_score:.4f}"
+        # ==========================================
+        # RESULT
+        # ==========================================
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.metric(
+                "Prediction",
+                prediction.upper()
+            )
+
+        with col2:
+            st.metric(
+                "Decision Score",
+                f"{decision_score:.4f}"
+            )
+
+        st.info(
+            "SVM uses decision scores instead of probabilities. "
+            "A higher score means stronger preference for that sentiment class."
         )
 
-    st.info(
-        "SVM uses decision scores instead of probabilities. "
-        "A higher score means stronger preference for that sentiment class."
-    )
+        # ==========================================
+        # DECISION SCORE GRAPH
+        # ==========================================
 
-    # ==========================================
-    # DECISION SCORE GRAPH
-    # ==========================================
+        st.subheader("📊 Sentiment Decision Scores")
 
-    st.subheader("📊 Sentiment Decision Scores")
+        score_df = pd.DataFrame({
+            "Sentiment": [
+                str(label).capitalize()
+                for label in model.classes_
+            ],
+            "Decision Score": scores
+        })
 
-    score_df = pd.DataFrame({
-        "Sentiment": [
-            str(label).capitalize()
-            for label in model.classes_
-        ],
-        "Decision Score": scores
-    })
+        st.bar_chart(
+            score_df.set_index(
+                "Sentiment"
+            )["Decision Score"]
+        )
 
-    st.bar_chart(
-        score_df.set_index(
-            "Sentiment"
-        )["Decision Score"]
-    )
     # ========================================================
     # BiLSTM
     # ========================================================
